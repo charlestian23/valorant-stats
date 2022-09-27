@@ -32,21 +32,21 @@ for i in range(3):
             raise e
 match_history = [match.to_dict() for match in match_history]
 
-pprint(match_history[0])
+# pprint(match_history[0])
 # all_players = match_history[0]["players"].to_dict()["all_players"]
 # for player in all_players:
 #     print(player.to_dict())
 
-# for match in match_history:
-#     rounds = [rnd.to_dict() for rnd in match["rounds"]]
-#     pprint(rounds)
-#     round_number = 1
-#     for rnd in rounds:
-#         player_stats = [stats.to_dict() for stats in rnd["player_stats"]]
-#         print("ROUND", round_number)
-#         round_kills = []
-#         for player_stat in player_stats:
-#             round_kills.extend([kill.to_dict() for kill in player_stat["kill_events"]])
-#         round_kills = sorted(round_kills, key=lambda x: x["kill_time_in_round"])
-#         pprint(round_kills)
-#         round_number += 1
+for match in match_history:
+    rounds = [rnd.to_dict() for rnd in match["rounds"]]
+    pprint(rounds)
+    round_number = 1
+    for rnd in rounds:
+        player_stats = [stats.to_dict() for stats in rnd["player_stats"]]
+        round_kills = []
+        for player_stat in player_stats:
+            round_kills.extend([kill.to_dict() for kill in player_stat["kill_events"]])
+        round_kills = sorted(round_kills, key=lambda x: x["kill_time_in_round"])
+        # print("ROUND", round_number)
+        # pprint(round_kills)
+        round_number += 1
