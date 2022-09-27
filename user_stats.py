@@ -56,13 +56,35 @@ class UserStats:
         statistics["kast"] = self.get_kast(match)
         return statistics
 
-    # TODO: implement method
-    def get_kda(self, match: dict()) -> list[int, int, int]:
-        return None
+    def get_kda(self, match: dict()) -> (int, int, int):
+        kill_count = 0
+        death_count = 0
+        assist_count = 0
+        kills = [kill.to_dict() for kill in match["kills"]]
+        for kill in kills:
+            if kill["killer_puuid"] == self.puuid:
+                kill_count += 1
+            if kill["victim_puuid"] == self.puuid:
+                death_count += 1
+            for assistant in kill["assistants"]:
+                if assistant.to_dict()["assistant_puuid"] == self.puuid:
+                    assist_count += 1
+                    break
+        return kill_count, death_count, assist_count
 
-    # TODO: implement method
     def get_hs_percent(self, match: dict()) -> float:
-        return None
+        total_shots = 0
+        total_headshots = 0
+        rounds = [rnd.to_dict() for rnd in match["rounds"]]
+        for rnd in rounds:
+            for temp in rnd["player_stats"]:
+                stats = temp.to_dict()
+                if stats["player_puuid"] == self.puuid:
+                    total_headshots += stats["headshots"]
+                    total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
+        return total_headshots / total_shots * 100
+
+
 
     # TODO: implement method
     def get_kast(self, match: dict()) -> float:
