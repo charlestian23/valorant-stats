@@ -92,7 +92,7 @@ class UserStats:
                     total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
         return total_headshots / total_shots * 100
 
-    # TODO: implement method
+    # TODO: modify method to account for the possibility that player is resurrected by a teammate Sage
     def get_kast(self, match: dict(), trade_window: int=5000) -> float:
         kast_rounds = 0
         rounds = [rnd.to_dict() for rnd in match["rounds"]]
@@ -138,7 +138,6 @@ class UserStats:
             if not kat and not died_without_trade:
                 kast_rounds += 1
 
-        print(kast_rounds, len(rounds))
         return kast_rounds / len(rounds) * 100
 
     def has_assist(self, assistants: list[valo.responses.match_history.MatchRoundAssistantV3]) -> bool:
@@ -146,8 +145,3 @@ class UserStats:
             if assistant.to_dict()["assistant_puuid"] == self.puuid:
                 return True
         return False
-
-
-if __name__ == "__main__":
-    me = UserStats("Excalibur", "0023")
-    pprint(me.get_statistics_for_last_ten_matches())
