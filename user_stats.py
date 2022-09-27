@@ -2,6 +2,14 @@ import valo_api as valo
 from pprint import pprint
 
 
+def get_round_kills_in_chronological_order(rnd: dict()) -> list[dict()]:
+    player_stats = [stats.to_dict() for stats in rnd["player_stats"]]
+    round_kills = []
+    for player_stat in player_stats:
+        round_kills.extend([kill.to_dict() for kill in player_stat["kill_events"]])
+    return sorted(round_kills, key=lambda x: x["kill_time_in_round"])
+
+
 class UserStats:
     def __init__(self, name: str, tag: str, attempts: int = 3):
         self.name = name
@@ -84,11 +92,60 @@ class UserStats:
                     total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
         return total_headshots / total_shots * 100
 
-
-
     # TODO: implement method
-    def get_kast(self, match: dict()) -> float:
-        return None
+    def get_kast(self, match: dict(), trade_window: int=5000) -> float:
+        kast_rounds = 0
+        rounds = [rnd.to_dict() for rnd in match["rounds"]]
+        for rnd in rounds:
+            round_kills = get_round_kills_in_chronological_order(rnd)
+
+            kat = False
+            died_without_trade = False
+            check_if_traded = False
+            killer_puuid = None
+            time_of_death = -1
+            for kill in round_kills:
+                if check_if_traded:
+                    if kill["kill_time_in_round"] - time_of_death > trade_window:
+                        check_if_traded = False
+                        killer_puuid = None
+                        time_of_death = -1
+                    elif kill["victim_puuid"] == killer_puuid:
+                        kast_rounds += 1
+                        kat = True
+                        died_without_trade = False
+                        break
+
+                # Player got a kill
+                if kill["killer_puuid"] == self.puuid:
+                    kast_rounds += 1
+                    kat = True
+                    break
+
+                # Player got an assist
+                if self.has_assist(kill["assistants"]):
+                    kast_rounds += 1
+                    kat = True
+                    break
+
+                # Player died during the round
+                if kill["victim_puuid"] == self.puuid:
+                    check_if_traded = True
+                    time_of_death = kill["kill_time_in_round"]
+                    died_without_trade = True
+
+            # Player survived the round
+            if not kat and not died_without_trade:
+                kast_rounds += 1
+
+        print(kast_rounds, len(rounds))
+        return kast_rounds / len(rounds) * 100
+
+    def has_assist(self, assistants: list[valo.responses.match_history.MatchRoundAssistantV3]) -> bool:
+        for assistant in assistants:
+            if assistant.to_dict()["assistant_puuid"] == self.puuid:
+                return True
+        return False
 
 
 if __name__ == "__main__":
