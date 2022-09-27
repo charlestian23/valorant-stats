@@ -1,6 +1,9 @@
-# https://docs.henrikdev.xyz/valorant.html
+# Website to test the API: https://docs.henrikdev.xyz/valorant.html
+# Note: this is code I wrote as I fooled around with the API to figure out how it worked
+
 import valo_api as valo
 from pprint import pprint
+
 
 for i in range(3):
     try:
