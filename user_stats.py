@@ -19,7 +19,7 @@ class UserStats:
                 self.account_data = valo.get_account_details_by_name("v1", self.name, self.tag, True).to_dict()
                 break
             except valo.exceptions.valo_api_exception.ValoAPIException as e:
-                if i != 2:
+                if i != 2 and e.status != 404 and e.status != 429:
                     print("Failed to get account details, trying again...")
                     continue
                 else:
@@ -145,3 +145,10 @@ class UserStats:
             if assistant.to_dict()["assistant_puuid"] == self.puuid:
                 return True
         return False
+
+
+if __name__ == "__main__":
+    name = str(input("Enter your Valorant name: "))
+    tag = str(input("Enter your Valorant tag: "))
+    me = UserStats(name, tag)
+    pprint(me.get_statistics_for_last_ten_matches())
