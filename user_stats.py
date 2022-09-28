@@ -92,7 +92,7 @@ class UserStats:
                     total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
         return total_headshots / total_shots * 100
 
-    # TODO: modify method to account for the possibility that player is resurrected by a teammate Sage
+    # TODO: Modify method to account for the possibility that player is resurrected by a teammate Sage (note that at the time of this writing, the API is missing data and so it is not possible to account for Sage's resurrection)
     def get_kast(self, match: dict(), trade_window: int=5000) -> float:
         kast_rounds = 0
         rounds = [rnd.to_dict() for rnd in match["rounds"]]
