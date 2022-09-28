@@ -106,10 +106,14 @@ class UserStats:
             time_of_death = -1
             for kill in round_kills:
                 if check_if_traded:
+                    # Player died without getting traded
+                    # Note: It is possible to still get a kill after dying (e.g. Brimstone or Viper post-plant molly), which is why the code does not break after verifying that the player died without getting traded
                     if kill["kill_time_in_round"] - time_of_death > trade_window:
                         check_if_traded = False
                         killer_puuid = None
                         time_of_death = -1
+
+                    # Player died but got traded
                     elif kill["victim_puuid"] == killer_puuid:
                         kast_rounds += 1
                         kat = True
