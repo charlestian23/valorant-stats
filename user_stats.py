@@ -92,7 +92,8 @@ class UserStats:
                     total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
         return total_headshots / total_shots * 100
 
-    # TODO: Modify method to account for the possibility that player is resurrected by a teammate Sage (note that at the time of this writing, the API is missing data and so it is not possible to account for Sage's resurrection)
+    # TODO: Modify method to account for the possibility that player is resurrected by a teammate Sage (note that at the
+    #  time of this writing, the API is missing data and so it is not possible to account for Sage's resurrection)
     def get_kast(self, match: dict(), trade_window: int=5000) -> float:
         kast_rounds = 0
         rounds = [rnd.to_dict() for rnd in match["rounds"]]
@@ -107,7 +108,8 @@ class UserStats:
             for kill in round_kills:
                 if check_if_traded:
                     # Player died without getting traded
-                    # Note: It is possible to still get a kill after dying (e.g. Brimstone or Viper post-plant molly), which is why the code does not break after verifying that the player died without getting traded
+                    # Note: It is possible to still get a kill after dying (e.g. Brimstone or Viper post-plant molly),
+                    # which is why the code does not break after verifying that the player died without getting traded
                     if kill["kill_time_in_round"] - time_of_death > trade_window:
                         check_if_traded = False
                         killer_puuid = None
