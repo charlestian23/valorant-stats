@@ -92,9 +92,9 @@ class UserStats:
                     total_shots += stats["headshots"] + stats["bodyshots"] + stats["legshots"]
         return total_headshots / total_shots * 100
 
-    # TODO: modify method to account for the possibility that player is resurrected by a teammate Sage
     def get_kast(self, match: dict(), trade_window: int=5000) -> float:
         kast_rounds = 0
+        has_teammate_sage = self.has_teammate_sage(match)
         rounds = [rnd.to_dict() for rnd in match["rounds"]]
         for rnd in rounds:
             round_kills = get_round_kills_in_chronological_order(rnd)
@@ -146,9 +146,24 @@ class UserStats:
                 return True
         return False
 
+    def has_teammate_sage(self, match: dict) -> bool:
+        all_players = match["players"].to_dict()["all_players"]
+        sage_players = []
+        team = None
+        for player in all_players:
+            player_data = player.to_dict()
+            if player_data["character"] == "Sage":
+                sage_players.append(player_data)
+            if player_data["puuid"] == self.puuid:
+                team = player_data["team"]
+        for sage in sage_players:
+            if sage["puuid"] != self.puuid and sage["team"] == team:
+                return True
+        return False
 
 if __name__ == "__main__":
-    name = str(input("Enter your Valorant name: "))
-    tag = str(input("Enter your Valorant tag: "))
-    me = UserStats(name, tag)
+    # name = str(input("Enter your Valorant name: "))
+    # tag = str(input("Enter your Valorant tag: "))
+    # me = UserStats(name, tag)
+    me = UserStats("Excalibur", "0023")
     pprint(me.get_statistics_for_last_ten_matches())
